@@ -35,9 +35,28 @@ pyGXrender-test-data/
 ## Recommended Usage
 
 1. Clone this repository next to the main `gximagecomputing` repo.
-2. Download a release asset or generate a local bundle with the helper scripts.
-3. Unpack into `raw/` or another local working directory.
-4. Point `gxrender` test scripts at the unpacked files.
+2. Install the default dataset into `raw/` with `scripts/install_dataset.sh`, or generate local bundles with the helper scripts.
+3. Point `gxrender` test scripts at the extracted files under `raw/`.
+
+Default installer:
+
+```bash
+scripts/install_dataset.sh
+```
+
+Custom target root:
+
+```bash
+scripts/install_dataset.sh --target-root /path/to/raw
+```
+
+The main `gximagecomputing` repository auto-detects fixtures from the sibling path:
+
+```text
+../pyGXrender-test-data/raw
+```
+
+or from the `GXRENDER_TEST_DATA_ROOT` environment variable.
 
 ## Release-Asset Workflow
 
