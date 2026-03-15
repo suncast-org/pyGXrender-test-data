@@ -1,0 +1,8 @@
+# Local unpacked working data
+raw/*
+!raw/.gitkeep
+
+# Derived checksum or scratch files
+*.tmp
+*.log
+.DS_Store
