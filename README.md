@@ -28,32 +28,32 @@ pyGXrender-test-data/
 ```
 
 - `manifests/`: checksums, provenance, and per-bundle inventories
-- `scripts/`: helper scripts for preparing, verifying, or fetching datasets
-- `bundles/`: release-ready compressed archives for reviewers/developers
+- `scripts/`: helper scripts for preparing, verifying, or publishing datasets
+- `bundles/`: local staging area for archives that will be uploaded as GitHub Release assets
 - `raw/`: optional unpacked working data kept out of Git history by default
 
 ## Recommended Usage
 
 1. Clone this repository next to the main `gximagecomputing` repo.
-2. Download or generate a versioned bundle.
+2. Download a release asset or generate a local bundle with the helper scripts.
 3. Unpack into `raw/` or another local working directory.
 4. Point `gxrender` test scripts at the unpacked files.
+
+## Release-Asset Workflow
+
+- Keep manifests, checksums, and helper scripts in normal Git history.
+- Stage large archives locally under `bundles/`.
+- Publish those archives as GitHub Release assets with `scripts/publish_bundle_release.sh`.
+- Record the release tag or asset location in the relevant manifest.
 
 ## Versioning Policy
 
 - Tag this repository when publishing a matching `pyGXrender` release test bundle.
 - Prefer immutable archives plus manifest files with checksums.
-- Record data provenance for every committed bundle.
+- Record data provenance for every published bundle.
 
 ## Data Policy
 
-- Keep only lightweight metadata and small helper files in normal Git history.
-- Avoid committing large binary datasets directly unless there is a strong reason.
-- Prefer release assets or compressed bundles referenced by manifest.
-
-## Next Steps
-
-Suggested first additions:
-- `manifests/manifest-template.md`
-- `scripts/verify_checksums.sh`
-- first bundle manifest describing the current CHR test set
+- Keep only lightweight metadata and helper files in normal Git history.
+- Do not commit large binary datasets directly to Git history.
+- Prefer GitHub Release assets referenced by tracked manifest files.

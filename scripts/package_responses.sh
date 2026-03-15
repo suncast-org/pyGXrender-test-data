@@ -42,6 +42,11 @@ BUNDLE_SUM="$MANIFESTS_DIR/responses_${STAMP}.bundle.sha256"
 MANIFEST_MD="$MANIFESTS_DIR/responses_${STAMP}.md"
 
 TMP_SUMS="$(mktemp)"
+cleanup() {
+  rm -f "$TMP_SUMS"
+}
+trap cleanup EXIT
+
 find "$INPUT_DIR" -type f | sort | while read -r path; do
   shasum -a 256 "$path"
 done > "$TMP_SUMS"
@@ -54,32 +59,29 @@ if [[ ! -f "$MANIFEST_MD" ]]; then
   {
     echo "# Response Bundle Manifest: $STAMP"
     echo
-    echo "- Bundle name: $BUNDLE_NAME"
-    echo "- Bundle timestamp: $STAMP"
-    echo "- Created on: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-    echo "- Generator: gximagecomputing/local/GenerateTestEUVResponses.pro"
-    echo "- Source model epoch: $STAMP"
+    echo "- Bundle name: \`$BUNDLE_NAME\`"
+    echo "- Bundle timestamp: \`$STAMP\`"
+    echo "- Created on: \`$(date -u +%Y-%m-%dT%H:%M:%SZ)\`"
+    echo "- Generator: \`gximagecomputing/local/GenerateTestEUVResponses.pro\`"
+    echo "- Source model epoch: \`$STAMP\`"
     echo
     echo "## Bundle Files"
     echo
-    echo "- Archive: \
-  - \\`bundles/$BUNDLE_NAME\\`"
-    echo "- Raw-file checksums: \
-  - \\`manifests/responses_${STAMP}.sha256\\`"
-    echo "- Bundle checksum: \
-  - \\`manifests/responses_${STAMP}.bundle.sha256\\`"
+    echo "- Local archive: \`bundles/$BUNDLE_NAME\`"
+    echo "- Raw-file checksums: \`manifests/responses_${STAMP}.sha256\`"
+    echo "- Bundle checksum: \`manifests/responses_${STAMP}.bundle.sha256\`"
     echo
     echo "## Raw Response Files"
     echo
     find "$INPUT_DIR" -maxdepth 1 -type f | sort | while read -r path; do
       base="$(basename "$path")"
-      echo "- \\`$base\\`"
+      echo "- \`$base\`"
     done
     echo
     echo "## Provenance"
     echo
-    echo "- Produced from IDL `LoadEUVresponse.pro` using the model observation time."
-    echo "- Review and fill in the exact SolarSoft / response-generation context before publishing."
+    echo "- Produced from IDL \`LoadEUVresponse.pro\` using the model observation time."
+    echo "- Publish the archive as a GitHub Release asset rather than committing it to Git history."
   } > "$MANIFEST_MD"
 fi
 
@@ -90,5 +92,6 @@ echo "Manifest:         $MANIFEST_MD"
 echo
 echo "Next suggested commands:"
 echo "  cd '$ROOT_DIR'"
-echo "  git add '$BUNDLE_PATH' '$RAW_SUMS' '$BUNDLE_SUM' '$MANIFEST_MD'"
+echo "  git add '$RAW_SUMS' '$BUNDLE_SUM' '$MANIFEST_MD'"
 echo "  git status --short"
+echo "  scripts/publish_bundle_release.sh <release-tag> '$BUNDLE_PATH' '$RAW_SUMS' '$BUNDLE_SUM' '$MANIFEST_MD'"

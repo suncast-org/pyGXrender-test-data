@@ -2,6 +2,10 @@
 raw/*
 !raw/.gitkeep
 
+# Local staged archives for GitHub Releases
+bundles/*.tar.gz
+bundles/*.zip
+
 # Derived checksum or scratch files
 *.tmp
 *.log
