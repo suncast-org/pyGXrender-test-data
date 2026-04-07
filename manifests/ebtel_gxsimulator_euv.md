@@ -3,7 +3,7 @@
 - Bundle name: `ebtel_gxsimulator_euv.tar.gz`
 - Bundle label: `gxsimulator_euv`
 - Created on: `2026-03-15T21:04:54Z`
-- Source directory: `/Users/gelu/ssw/packages/gx_simulator/euv/ebtel`
+- Source directory: `raw/ebtel/ebtel_gxsimulator_euv`
 
 ## Bundle Files
 

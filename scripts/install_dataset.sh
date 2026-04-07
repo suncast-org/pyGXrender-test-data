@@ -4,13 +4,14 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 TARGET_ROOT="$ROOT_DIR/raw"
 REPO="suncast-org/pyGXrender-test-data"
-MODELS_TAG="${GXRENDER_DATA_MODELS_TAG:-models-20251126T153431}"
+MODELS_TAG="${GXRENDER_DATA_MODELS_TAG:-testdata-20260323T195655}"
+EOVSA_TAG="${GXRENDER_DATA_EOVSA_TAG:-testdata-20260323T195655}"
 RESPONSES_TAG="${GXRENDER_DATA_RESPONSES_TAG:-responses-20251126T153431}"
 EBTEL_TAG="${GXRENDER_DATA_EBTEL_TAG:-ebtel-gxsimulator-euv}"
 
 usage() {
   cat <<USAGE
-Usage: $0 [--target-root DIR] [--repo OWNER/REPO] [--models-tag TAG] [--responses-tag TAG] [--ebtel-tag TAG]
+Usage: $0 [--target-root DIR] [--repo OWNER/REPO] [--models-tag TAG] [--eovsa-tag TAG] [--responses-tag TAG] [--ebtel-tag TAG]
 
 Installs the default pyGXrender fixture set by downloading release assets and
 extracting them under the target raw-data directory.
@@ -19,6 +20,7 @@ Defaults:
   --target-root   $ROOT_DIR/raw
   --repo          suncast-org/pyGXrender-test-data
   --models-tag    $MODELS_TAG
+  --eovsa-tag     $EOVSA_TAG
   --responses-tag $RESPONSES_TAG
   --ebtel-tag     $EBTEL_TAG
 USAGE
@@ -36,6 +38,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --models-tag)
       MODELS_TAG="$2"
+      shift 2
+      ;;
+    --eovsa-tag)
+      EOVSA_TAG="$2"
       shift 2
       ;;
     --responses-tag)
@@ -63,15 +69,37 @@ if ! command -v gh >/dev/null 2>&1; then
   exit 1
 fi
 
+sha256_file() {
+  local path="$1"
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$path" | awk '{print $1}'
+    return
+  fi
+  if command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "$path" | awk '{print $1}'
+    return
+  fi
+  if command -v openssl >/dev/null 2>&1; then
+    openssl dgst -sha256 "$path" | awk '{print $NF}'
+    return
+  fi
+  echo "No SHA-256 tool found (need one of: sha256sum, shasum, openssl)." >&2
+  exit 1
+}
+
 TARGET_ROOT="$(cd "$(dirname "$TARGET_ROOT")" && pwd)/$(basename "$TARGET_ROOT")"
 mkdir -p "$TARGET_ROOT"
 
 download_and_extract() {
   local tag="$1"
   local dest="$2"
+  local asset_prefix="$3"
   local tmp_dir
   local bundle_file
   local bundle_sum
+  local bundle_name
+  local expected_sum
+  local actual_sum
 
   tmp_dir="$(mktemp -d)"
   trap 'rm -rf "$tmp_dir"' RETURN
@@ -81,23 +109,34 @@ download_and_extract() {
     --repo "$REPO" \
     --dir "$tmp_dir" \
     --clobber \
-    --pattern "*.tar.gz" \
-    --pattern "*.bundle.sha256" \
-    --pattern "*.sha256" \
-    --pattern "*.md"
+    --pattern "${asset_prefix}*.tar.gz" \
+    --pattern "${asset_prefix}*.bundle.sha256" \
+    --pattern "${asset_prefix}*.sha256" \
+    --pattern "${asset_prefix}*.md"
 
-  bundle_file="$(find "$tmp_dir" -maxdepth 1 -type f -name '*.tar.gz' | head -n 1)"
-  bundle_sum="$(find "$tmp_dir" -maxdepth 1 -type f -name '*.bundle.sha256' | head -n 1)"
+  bundle_file="$(find "$tmp_dir" -maxdepth 1 -type f -name "${asset_prefix}*.tar.gz" | head -n 1)"
+  bundle_sum="$(find "$tmp_dir" -maxdepth 1 -type f -name "${asset_prefix}*.bundle.sha256" | head -n 1)"
 
   if [[ -z "$bundle_file" || -z "$bundle_sum" ]]; then
     echo "Missing bundle or checksum asset for release tag: $tag" >&2
     exit 1
   fi
 
-  (
-    cd "$tmp_dir"
-    shasum -a 256 -c "$(basename "$bundle_sum")"
-  )
+  bundle_name="$(basename "$bundle_file")"
+  expected_sum="$(awk '{print $1}' "$bundle_sum")"
+  actual_sum="$(sha256_file "$bundle_file")"
+
+  if [[ -z "$expected_sum" || -z "$actual_sum" ]]; then
+    echo "Failed to compute bundle checksum for release tag: $tag" >&2
+    exit 1
+  fi
+
+  if [[ "$expected_sum" != "$actual_sum" ]]; then
+    echo "Checksum mismatch for $bundle_name" >&2
+    echo "  expected: $expected_sum" >&2
+    echo "  actual:   $actual_sum" >&2
+    exit 1
+  fi
 
   mkdir -p "$dest"
   tar -xzf "$bundle_file" -C "$dest"
@@ -105,9 +144,10 @@ download_and_extract() {
   echo "Installed $tag into $dest"
 }
 
-download_and_extract "$MODELS_TAG" "$TARGET_ROOT/models"
-download_and_extract "$RESPONSES_TAG" "$TARGET_ROOT/responses"
-download_and_extract "$EBTEL_TAG" "$TARGET_ROOT/ebtel"
+download_and_extract "$MODELS_TAG" "$TARGET_ROOT/models" "models_"
+download_and_extract "$EOVSA_TAG" "$TARGET_ROOT/eovsa_maps" "eovsa_maps_"
+download_and_extract "$RESPONSES_TAG" "$TARGET_ROOT/responses" "responses_"
+download_and_extract "$EBTEL_TAG" "$TARGET_ROOT/ebtel" "ebtel_"
 
 echo
 echo "Dataset install complete."

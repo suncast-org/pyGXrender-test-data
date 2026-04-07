@@ -6,6 +6,24 @@ RAW_DIR="$ROOT_DIR/raw/responses"
 BUNDLES_DIR="$ROOT_DIR/bundles"
 MANIFESTS_DIR="$ROOT_DIR/manifests"
 
+sha256_file() {
+  local path="$1"
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$path" | awk '{print $1}'
+    return
+  fi
+  if command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "$path" | awk '{print $1}'
+    return
+  fi
+  if command -v openssl >/dev/null 2>&1; then
+    openssl dgst -sha256 "$path" | awk '{print $NF}'
+    return
+  fi
+  echo "No SHA-256 tool found (need one of: sha256sum, shasum, openssl)." >&2
+  exit 1
+}
+
 usage() {
   cat <<USAGE
 Usage: $0 <timestamp-dir-name>
@@ -48,12 +66,12 @@ cleanup() {
 trap cleanup EXIT
 
 find "$INPUT_DIR" -type f | sort | while read -r path; do
-  shasum -a 256 "$path"
+  printf '%s  %s\n' "$(sha256_file "$path")" "$path"
 done > "$TMP_SUMS"
 mv "$TMP_SUMS" "$RAW_SUMS"
 
 tar -czf "$BUNDLE_PATH" -C "$RAW_DIR" "$STAMP"
-shasum -a 256 "$BUNDLE_PATH" > "$BUNDLE_SUM"
+printf '%s  %s\n' "$(sha256_file "$BUNDLE_PATH")" "$BUNDLE_PATH" > "$BUNDLE_SUM"
 
 if [[ ! -f "$MANIFEST_MD" ]]; then
   {

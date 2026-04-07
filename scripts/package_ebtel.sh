@@ -4,8 +4,32 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 BUNDLES_DIR="$ROOT_DIR/bundles"
 MANIFESTS_DIR="$ROOT_DIR/manifests"
-SOURCE_DIR="/Users/gelu/ssw/packages/gx_simulator/euv/ebtel"
+SOURCE_DIR="${GXRENDER_EBTEL_SOURCE_DIR:-${SSW:-}/packages/gx_simulator/euv/ebtel}"
 LABEL="${1:-gxsimulator_euv}"
+
+sha256_file() {
+  local path="$1"
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$path" | awk '{print $1}'
+    return
+  fi
+  if command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "$path" | awk '{print $1}'
+    return
+  fi
+  if command -v openssl >/dev/null 2>&1; then
+    openssl dgst -sha256 "$path" | awk '{print $NF}'
+    return
+  fi
+  echo "No SHA-256 tool found (need one of: sha256sum, shasum, openssl)." >&2
+  exit 1
+}
+
+if [[ -z "$SOURCE_DIR" || ! -d "$SOURCE_DIR" ]]; then
+  echo "EBTEL source directory not found: ${SOURCE_DIR:-<unset>}" >&2
+  echo "Hint: set GXRENDER_EBTEL_SOURCE_DIR or SSW before running this script." >&2
+  exit 1
+fi
 
 mkdir -p "$BUNDLES_DIR" "$MANIFESTS_DIR"
 
@@ -40,12 +64,12 @@ mkdir -p "$TMP_DIR"
 for src in "${FILES[@]}"; do
   base="$(basename "$src")"
   cp "$src" "$TMP_DIR/$base"
-  shasum -a 256 "$src" >> "$TMP_SUMS"
+  printf '%s  %s\n' "$(sha256_file "$src")" "$src" >> "$TMP_SUMS"
 done
 mv "$TMP_SUMS" "$RAW_SUMS"
 
 tar -czf "$BUNDLE_PATH" -C "$TMP_ROOT" "ebtel_${LABEL}"
-shasum -a 256 "$BUNDLE_PATH" > "$BUNDLE_SUM"
+printf '%s  %s\n' "$(sha256_file "$BUNDLE_PATH")" "$BUNDLE_PATH" > "$BUNDLE_SUM"
 
 if [[ ! -f "$MANIFEST_MD" ]]; then
   {
@@ -70,7 +94,7 @@ if [[ ! -f "$MANIFEST_MD" ]]; then
     echo
     echo "## Provenance"
     echo
-    echo "- These files were copied from the local SolarSoft gx_simulator EBTEL table directory."
+    echo "- These files were copied from the SolarSoft gx_simulator EBTEL table directory referenced by \`GXRENDER_EBTEL_SOURCE_DIR\` (or \`\$SSW/packages/gx_simulator/euv/ebtel\` if \`SSW\` is set)."
     echo "- The bundle preserves all currently available .sav tables under \`gx_simulator/euv/ebtel\`."
     echo "- Publish the archive as a GitHub Release asset rather than committing it to Git history."
   } > "$MANIFEST_MD"
