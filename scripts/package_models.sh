@@ -4,7 +4,8 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 BUNDLES_DIR="$ROOT_DIR/bundles"
 MANIFESTS_DIR="$ROOT_DIR/manifests"
-SOURCE_DIR="/Users/gelu/Library/CloudStorage/Dropbox/@Projects/@SUNCAST-ORG/gximagecomputing/test_data"
+WORKSPACE_ROOT="$(cd "$ROOT_DIR/.." && pwd)"
+SOURCE_DIR="${GXRENDER_MODELS_SOURCE_DIR:-$WORKSPACE_ROOT/gximagecomputing/test_data}"
 STAMP="${1:-20251126T153431}"
 
 FILES=(
@@ -15,6 +16,24 @@ FILES=(
   test.none.from_fresh.h5
   test.none.from_savbox.h5
 )
+
+sha256_file() {
+  local path="$1"
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$path" | awk '{print $1}'
+    return
+  fi
+  if command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "$path" | awk '{print $1}'
+    return
+  fi
+  if command -v openssl >/dev/null 2>&1; then
+    openssl dgst -sha256 "$path" | awk '{print $NF}'
+    return
+  fi
+  echo "No SHA-256 tool found (need one of: sha256sum, shasum, openssl)." >&2
+  exit 1
+}
 
 mkdir -p "$BUNDLES_DIR" "$MANIFESTS_DIR"
 
@@ -40,15 +59,16 @@ for base in "${FILES[@]}"; do
   src="$SOURCE_DIR/$base"
   if [[ ! -f "$src" ]]; then
     echo "Missing source file: $src" >&2
+    echo "Hint: set GXRENDER_MODELS_SOURCE_DIR to the directory containing the model fixtures." >&2
     exit 1
   fi
   cp "$src" "$TMP_DIR/$base"
-  shasum -a 256 "$src" >> "$TMP_SUMS"
+  printf '%s  %s\n' "$(sha256_file "$src")" "$src" >> "$TMP_SUMS"
 done
 mv "$TMP_SUMS" "$RAW_SUMS"
 
 tar -czf "$BUNDLE_PATH" -C "$TMP_ROOT" "models_${STAMP}"
-shasum -a 256 "$BUNDLE_PATH" > "$BUNDLE_SUM"
+printf '%s  %s\n' "$(sha256_file "$BUNDLE_PATH")" "$BUNDLE_PATH" > "$BUNDLE_SUM"
 
 if [[ ! -f "$MANIFEST_MD" ]]; then
   {
@@ -74,9 +94,9 @@ if [[ ! -f "$MANIFEST_MD" ]]; then
     echo
     echo "## Provenance"
     echo
-    echo "- These files are the current local gximagecomputing model fixtures, packaged without the separate EUV response tables."
+    echo "- These files are gximagecomputing model fixtures packaged without the separate EUV response tables."
     echo "- The bundle includes the main CHR SAV/HDF5 fixtures and the additional no-corona conversion variants currently used by local parity and rendering tests."
-    echo "- The source files were copied from \`gximagecomputing/test_data\` at packaging time."
+    echo "- The source files were copied from the directory referenced by \`GXRENDER_MODELS_SOURCE_DIR\` (default: sibling \`gximagecomputing/test_data\`)."
     echo "- Publish the archive as a GitHub Release asset rather than committing it to Git history."
   } > "$MANIFEST_MD"
 fi

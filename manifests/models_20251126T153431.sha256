@@ -1,6 +1,6 @@
-37fe6b8d0b50ecf8a2190502695201a51781cb6b1ba2ca83baa2cf0cd312f40b  /Users/gelu/Library/CloudStorage/Dropbox/@Projects/@SUNCAST-ORG/gximagecomputing/test_data/test.chr.sav
-4afa0105895e24de0b2ee4ab193c22675fd89e72e8b53dafec8e2759afb12e77  /Users/gelu/Library/CloudStorage/Dropbox/@Projects/@SUNCAST-ORG/gximagecomputing/test_data/test.chr.h5
-af45e6dfefc4bbf6ca9d01cce18899eefba4ec30ee1e87e0d5d13a618fda5acb  /Users/gelu/Library/CloudStorage/Dropbox/@Projects/@SUNCAST-ORG/gximagecomputing/test_data/test.chr.sav.clone.h5
-7ab6327d0a3d34562b7fb9499d3e4bab923b65020e8a909450fd1aab62c036b6  /Users/gelu/Library/CloudStorage/Dropbox/@Projects/@SUNCAST-ORG/gximagecomputing/test_data/test.chr.none.sav.h5
-3e0b2882fc83b3fb5192b3b4b98991fb89d7871c37c6bafc90530be0bb33b6dc  /Users/gelu/Library/CloudStorage/Dropbox/@Projects/@SUNCAST-ORG/gximagecomputing/test_data/test.none.from_fresh.h5
-09a9ab107b849fa9fb923accfdd4d3efb9224a44acd97f3946882615cf8c4a5b  /Users/gelu/Library/CloudStorage/Dropbox/@Projects/@SUNCAST-ORG/gximagecomputing/test_data/test.none.from_savbox.h5
+37fe6b8d0b50ecf8a2190502695201a51781cb6b1ba2ca83baa2cf0cd312f40b  raw/models/models_20251126T153431/test.chr.sav
+4afa0105895e24de0b2ee4ab193c22675fd89e72e8b53dafec8e2759afb12e77  raw/models/models_20251126T153431/test.chr.h5
+af45e6dfefc4bbf6ca9d01cce18899eefba4ec30ee1e87e0d5d13a618fda5acb  raw/models/models_20251126T153431/test.chr.sav.clone.h5
+7ab6327d0a3d34562b7fb9499d3e4bab923b65020e8a909450fd1aab62c036b6  raw/models/models_20251126T153431/test.chr.none.sav.h5
+3e0b2882fc83b3fb5192b3b4b98991fb89d7871c37c6bafc90530be0bb33b6dc  raw/models/models_20251126T153431/test.none.from_fresh.h5
+09a9ab107b849fa9fb923accfdd4d3efb9224a44acd97f3946882615cf8c4a5b  raw/models/models_20251126T153431/test.none.from_savbox.h5

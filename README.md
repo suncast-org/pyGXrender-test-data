@@ -58,9 +58,11 @@ The main `gximagecomputing` repository auto-detects fixtures from the sibling pa
 
 or from the `GXRENDER_TEST_DATA_ROOT` environment variable.
 
-## Provenance and Regeneration
+## Fixture Origins
 
-The published bundles are intended to be reproducible from upstream tools.
+The published bundles originate from upstream tools, but this repository is
+intended to be consumable without access to the original local packaging
+environment.
 
 ### EBTEL tables
 
@@ -74,19 +76,21 @@ The bundle in this repository is provided for reproducible testing, not because 
 
 ### Model fixtures
 
-`test.chr.sav` was produced from the original IDL `gx_fov2box` command stored in the SAV metadata:
+`test.chr.sav` was produced from an IDL `gx_fov2box` run stored in the SAV metadata.
+The exact local output/cache directories are not important for downstream use.
 
 ```idl
-gx_fov2box, '26-Nov-25 15:47:52', CENTER_ARCSEC=[ -280, -230], DX_KM= 1400, EUV= 1, OUT_DIR='/Users/gelu/Library/CloudStorage/Dropbox/@Projects/sim4fasr/gx_models', SIZE_PIX=[ 150, 100, 100], TMP_DIR='/Users/gelu/Library/CloudStorage/Dropbox/@Projects/sim4fasr/jsoc_cache', UV= 1, CEA= 1
+gx_fov2box, '26-Nov-25 15:47:52', CENTER_ARCSEC=[ -280, -230], DX_KM= 1400, EUV= 1, SIZE_PIX=[ 150, 100, 100], UV= 1, CEA= 1
 ```
 
-`test.chr.h5` was produced from the Python `gx-fov2box` command stored in the HDF metadata:
+`test.chr.h5` was produced from a Python `gx-fov2box` run stored in the HDF metadata.
+Again, the local cache/output directories are environment-specific and omitted here.
 
 ```bash
-gx-fov2box --time 2025-11-26T15:47:52 --coords -280.0 -230.0 --hpc --cea --box-dims 150 100 100 --dx-km 1400.000000 --pad-frac 0.1000 --data-dir /Users/gelu/Library/CloudStorage/Dropbox/@Projects/sim4fasr/jsoc_cache --gxmodel-dir /Users/gelu/Library/CloudStorage/Dropbox/@Projects/sim4fasr/gx_models --euv --uv --save-potential --save-bounds --save-nas --save-gen --save-chr --observer-name earth --stop-after chr
+gx-fov2box --time 2025-11-26T15:47:52 --coords -280.0 -230.0 --hpc --cea --box-dims 150 100 100 --dx-km 1400.000000 --pad-frac 0.1000 --euv --uv --save-potential --save-bounds --save-nas --save-gen --save-chr --observer-name earth --stop-after chr
 ```
 
-These are provenance commands. Re-running them requires a working SSW/IDL GX Simulator or `pyAMPP` environment and access to the referenced data caches.
+These are origin examples only. Re-running them requires a working SSW/IDL GX Simulator or `pyAMPP` environment plus appropriate local data caches.
 
 ### Response fixtures
 
@@ -112,7 +116,7 @@ Those scripts require an SSW/IDL GX Simulator installation with the relevant Sol
 
 - Tag this repository when publishing a matching `pyGXrender` release test bundle.
 - Prefer immutable archives plus manifest files with checksums.
-- Record data provenance for every published bundle.
+- Record only the minimal fixture-origin information needed to regenerate a published bundle.
 
 ## Data Policy
 
