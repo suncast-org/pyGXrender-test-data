@@ -50,6 +50,12 @@ Custom target root:
 scripts/install_dataset.sh --target-root /path/to/raw
 ```
 
+Install the default bundle set, including the 2020-11-26 AIA EUV maps:
+
+```bash
+scripts/install_dataset.sh
+```
+
 The main `gximagecomputing` repository auto-detects fixtures from the sibling path:
 
 ```text
@@ -63,6 +69,11 @@ or from the `GXRENDER_TEST_DATA_ROOT` environment variable.
 The published bundles originate from upstream tools, but this repository is
 intended to be consumable without access to the original local packaging
 environment.
+
+Tracked dataset stems should use the actual observation or model epoch. Local
+packaging timestamps are useful provenance, but they should not define the
+fixture identity because those misleading stems can leak into downstream
+launcher assumptions.
 
 ### EBTEL tables
 
@@ -104,6 +115,26 @@ The helper loops over supported instruments and writes date-tagged files such as
 - `resp_aia_20251126T153431.sav`
 
 Those scripts require an SSW/IDL GX Simulator installation with the relevant SolarSoft response routines available. The response generation epoch follows the test-model observation time (`2025-11-26T15:34:31`), not just the original `gx_fov2box` request time.
+
+### Observational fixture bundles for 2020-11-26
+
+The 2020-11-26 observational fitting set now uses truthful observation-epoch
+bundle stems:
+
+- `models_20201126T195831`
+- `eovsa_maps_20201126T200000Z`
+- `aia_euv_maps_20201126T195823Z`
+
+These datasets correspond to:
+
+- the CHR model at `2020-11-26T19:58:31`
+- the EOVSA full-disk microwave maps at `2020-11-26T20:00:00Z`
+- the full-disk AIA EUV maps at `2020-11-26T19:58:23Z`
+
+The AIA EUV files currently originate from the local JSOC cache staging area
+and are tracked here through manifest/checksum metadata so they can be
+promoted into the same release-asset workflow as the existing CHR/EOVSA
+fixtures.
 
 ## Release-Asset Workflow
 
