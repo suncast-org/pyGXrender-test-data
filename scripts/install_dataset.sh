@@ -4,14 +4,15 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 TARGET_ROOT="$ROOT_DIR/raw"
 REPO="suncast-org/pyGXrender-test-data"
-MODELS_TAG="${GXRENDER_DATA_MODELS_TAG:-testdata-20260323T195655}"
-EOVSA_TAG="${GXRENDER_DATA_EOVSA_TAG:-testdata-20260323T195655}"
+MODELS_TAG="${GXRENDER_DATA_MODELS_TAG:-testdata-models-20201126T195831}"
+EOVSA_TAG="${GXRENDER_DATA_EOVSA_TAG:-testdata-eovsa-20201126T200000Z}"
+AIA_EUV_TAG="${GXRENDER_DATA_AIA_EUV_TAG:-testdata-aia-euv-20201126T195823Z}"
 RESPONSES_TAG="${GXRENDER_DATA_RESPONSES_TAG:-responses-20251126T153431}"
 EBTEL_TAG="${GXRENDER_DATA_EBTEL_TAG:-ebtel-gxsimulator-euv}"
 
 usage() {
   cat <<USAGE
-Usage: $0 [--target-root DIR] [--repo OWNER/REPO] [--models-tag TAG] [--eovsa-tag TAG] [--responses-tag TAG] [--ebtel-tag TAG]
+Usage: $0 [--target-root DIR] [--repo OWNER/REPO] [--models-tag TAG] [--eovsa-tag TAG] [--aia-euv-tag TAG] [--responses-tag TAG] [--ebtel-tag TAG]
 
 Installs the default pyGXrender fixture set by downloading release assets and
 extracting them under the target raw-data directory.
@@ -21,6 +22,7 @@ Defaults:
   --repo          suncast-org/pyGXrender-test-data
   --models-tag    $MODELS_TAG
   --eovsa-tag     $EOVSA_TAG
+  --aia-euv-tag   $AIA_EUV_TAG
   --responses-tag $RESPONSES_TAG
   --ebtel-tag     $EBTEL_TAG
 USAGE
@@ -46,6 +48,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --responses-tag)
       RESPONSES_TAG="$2"
+      shift 2
+      ;;
+    --aia-euv-tag)
+      AIA_EUV_TAG="$2"
       shift 2
       ;;
     --ebtel-tag)
@@ -146,6 +152,9 @@ download_and_extract() {
 
 download_and_extract "$MODELS_TAG" "$TARGET_ROOT/models" "models_"
 download_and_extract "$EOVSA_TAG" "$TARGET_ROOT/eovsa_maps" "eovsa_maps_"
+if [[ -n "$AIA_EUV_TAG" ]]; then
+  download_and_extract "$AIA_EUV_TAG" "$TARGET_ROOT/aia_euv_maps" "aia_euv_maps_"
+fi
 download_and_extract "$RESPONSES_TAG" "$TARGET_ROOT/responses" "responses_"
 download_and_extract "$EBTEL_TAG" "$TARGET_ROOT/ebtel" "ebtel_"
 
