@@ -7,12 +7,13 @@ REPO="suncast-org/pyGXrender-test-data"
 MODELS_TAG="${GXRENDER_DATA_MODELS_TAG:-testdata-models-20201126T195831}"
 EOVSA_TAG="${GXRENDER_DATA_EOVSA_TAG:-testdata-eovsa-20201126T200000Z}"
 AIA_EUV_TAG="${GXRENDER_DATA_AIA_EUV_TAG:-testdata-aia-euv-20201126T195823Z}"
+MODEL_LOADER_PARITY_TAG="${GXRENDER_DATA_MODEL_LOADER_PARITY_TAG:-testdata-model-loader-parity-20201126T195831}"
 RESPONSES_TAG="${GXRENDER_DATA_RESPONSES_TAG:-responses-20251126T153431}"
 EBTEL_TAG="${GXRENDER_DATA_EBTEL_TAG:-ebtel-gxsimulator-euv}"
 
 usage() {
   cat <<USAGE
-Usage: $0 [--target-root DIR] [--repo OWNER/REPO] [--models-tag TAG] [--eovsa-tag TAG] [--aia-euv-tag TAG] [--responses-tag TAG] [--ebtel-tag TAG]
+Usage: $0 [--target-root DIR] [--repo OWNER/REPO] [--models-tag TAG] [--eovsa-tag TAG] [--aia-euv-tag TAG] [--model-loader-parity-tag TAG] [--responses-tag TAG] [--ebtel-tag TAG]
 
 Installs the default pyGXrender fixture set by downloading release assets and
 extracting them under the target raw-data directory.
@@ -23,6 +24,7 @@ Defaults:
   --models-tag    $MODELS_TAG
   --eovsa-tag     $EOVSA_TAG
   --aia-euv-tag   $AIA_EUV_TAG
+  --model-loader-parity-tag $MODEL_LOADER_PARITY_TAG
   --responses-tag $RESPONSES_TAG
   --ebtel-tag     $EBTEL_TAG
 USAGE
@@ -52,6 +54,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --aia-euv-tag)
       AIA_EUV_TAG="$2"
+      shift 2
+      ;;
+    --model-loader-parity-tag)
+      MODEL_LOADER_PARITY_TAG="$2"
       shift 2
       ;;
     --ebtel-tag)
@@ -151,6 +157,9 @@ download_and_extract() {
 }
 
 download_and_extract "$MODELS_TAG" "$TARGET_ROOT/models" "models_"
+if [[ -n "$MODEL_LOADER_PARITY_TAG" ]]; then
+  download_and_extract "$MODEL_LOADER_PARITY_TAG" "$TARGET_ROOT/models" "model_loader_parity_"
+fi
 download_and_extract "$EOVSA_TAG" "$TARGET_ROOT/eovsa_maps" "eovsa_maps_"
 if [[ -n "$AIA_EUV_TAG" ]]; then
   download_and_extract "$AIA_EUV_TAG" "$TARGET_ROOT/aia_euv_maps" "aia_euv_maps_"
