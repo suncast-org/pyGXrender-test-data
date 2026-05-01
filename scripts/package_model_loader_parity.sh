@@ -81,6 +81,7 @@ printf '%s  %s\n' "$(sha256_file "$BUNDLE_PATH")" "bundles/$BUNDLE_NAME" > "$BUN
   echo "- Raw-file checksums: \`manifests/model_loader_parity_${STAMP}.sha256\`"
   echo "- Bundle checksum: \`manifests/model_loader_parity_${STAMP}.bundle.sha256\`"
   echo "- Release tag: \`testdata-model-loader-parity-${STAMP}\`"
+  echo "- Release URL: \`https://github.com/suncast-org/pyGXrender-test-data/releases/tag/testdata-model-loader-parity-${STAMP}\`"
   echo
   echo "## Raw Model Files"
   echo

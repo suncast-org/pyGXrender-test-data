@@ -7,7 +7,7 @@ REPO="suncast-org/pyGXrender-test-data"
 MODELS_TAG="${GXRENDER_DATA_MODELS_TAG:-testdata-models-20201126T195831}"
 EOVSA_TAG="${GXRENDER_DATA_EOVSA_TAG:-testdata-eovsa-20201126T200000Z}"
 AIA_EUV_TAG="${GXRENDER_DATA_AIA_EUV_TAG:-testdata-aia-euv-20201126T195823Z}"
-MODEL_LOADER_PARITY_TAG="${GXRENDER_DATA_MODEL_LOADER_PARITY_TAG:-}"
+MODEL_LOADER_PARITY_TAG="${GXRENDER_DATA_MODEL_LOADER_PARITY_TAG-testdata-model-loader-parity-20201126T195831}"
 RESPONSES_TAG="${GXRENDER_DATA_RESPONSES_TAG:-responses-20251126T153431}"
 EBTEL_TAG="${GXRENDER_DATA_EBTEL_TAG:-ebtel-gxsimulator-euv}"
 
@@ -24,7 +24,7 @@ Defaults:
   --models-tag    $MODELS_TAG
   --eovsa-tag     $EOVSA_TAG
   --aia-euv-tag   $AIA_EUV_TAG
-  --model-loader-parity-tag $MODEL_LOADER_PARITY_TAG (optional; unset by default)
+  --model-loader-parity-tag $MODEL_LOADER_PARITY_TAG (set to empty string to skip)
   --responses-tag $RESPONSES_TAG
   --ebtel-tag     $EBTEL_TAG
 USAGE
@@ -160,8 +160,7 @@ download_and_extract "$MODELS_TAG" "$TARGET_ROOT/models" "models_"
 if [[ -n "$MODEL_LOADER_PARITY_TAG" ]]; then
   download_and_extract "$MODEL_LOADER_PARITY_TAG" "$TARGET_ROOT/models" "model_loader_parity_"
 else
-  echo "Skipping optional model-loader parity fixtures."
-  echo "Install them with --model-loader-parity-tag testdata-model-loader-parity-20201126T195831 after that release is published."
+  echo "Skipping model-loader parity fixtures because --model-loader-parity-tag is empty."
 fi
 download_and_extract "$EOVSA_TAG" "$TARGET_ROOT/eovsa_maps" "eovsa_maps_"
 if [[ -n "$AIA_EUV_TAG" ]]; then

@@ -12,6 +12,7 @@
 - Raw-file checksums: `manifests/model_loader_parity_20201126T195831.sha256`
 - Bundle checksum: `manifests/model_loader_parity_20201126T195831.bundle.sha256`
 - Release tag: `testdata-model-loader-parity-20201126T195831`
+- Release URL: `https://github.com/suncast-org/pyGXrender-test-data/releases/tag/testdata-model-loader-parity-20201126T195831`
 
 ## Raw Model Files
 
