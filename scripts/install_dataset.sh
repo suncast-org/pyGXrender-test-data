@@ -7,7 +7,7 @@ REPO="suncast-org/pyGXrender-test-data"
 MODELS_TAG="${GXRENDER_DATA_MODELS_TAG:-testdata-models-20201126T195831}"
 EOVSA_TAG="${GXRENDER_DATA_EOVSA_TAG:-testdata-eovsa-20201126T200000Z}"
 AIA_EUV_TAG="${GXRENDER_DATA_AIA_EUV_TAG:-testdata-aia-euv-20201126T195823Z}"
-MODEL_LOADER_PARITY_TAG="${GXRENDER_DATA_MODEL_LOADER_PARITY_TAG:-testdata-model-loader-parity-20201126T195831}"
+MODEL_LOADER_PARITY_TAG="${GXRENDER_DATA_MODEL_LOADER_PARITY_TAG:-}"
 RESPONSES_TAG="${GXRENDER_DATA_RESPONSES_TAG:-responses-20251126T153431}"
 EBTEL_TAG="${GXRENDER_DATA_EBTEL_TAG:-ebtel-gxsimulator-euv}"
 
@@ -24,7 +24,7 @@ Defaults:
   --models-tag    $MODELS_TAG
   --eovsa-tag     $EOVSA_TAG
   --aia-euv-tag   $AIA_EUV_TAG
-  --model-loader-parity-tag $MODEL_LOADER_PARITY_TAG
+  --model-loader-parity-tag $MODEL_LOADER_PARITY_TAG (optional; unset by default)
   --responses-tag $RESPONSES_TAG
   --ebtel-tag     $EBTEL_TAG
 USAGE
