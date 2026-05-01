@@ -159,6 +159,9 @@ download_and_extract() {
 download_and_extract "$MODELS_TAG" "$TARGET_ROOT/models" "models_"
 if [[ -n "$MODEL_LOADER_PARITY_TAG" ]]; then
   download_and_extract "$MODEL_LOADER_PARITY_TAG" "$TARGET_ROOT/models" "model_loader_parity_"
+else
+  echo "Skipping optional model-loader parity fixtures."
+  echo "Install them with --model-loader-parity-tag testdata-model-loader-parity-20201126T195831 after that release is published."
 fi
 download_and_extract "$EOVSA_TAG" "$TARGET_ROOT/eovsa_maps" "eovsa_maps_"
 if [[ -n "$AIA_EUV_TAG" ]]; then
